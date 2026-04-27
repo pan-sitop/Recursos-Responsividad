@@ -1,1 +1,1 @@
-Diseño Responsivo
+<h1>Diseño Responsivo</h1>
