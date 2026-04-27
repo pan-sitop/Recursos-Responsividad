@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 3: CSS Grid</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/dracula.min.css" id="theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/monokai.min.css">
+
+    <style>
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 { text-transform: none; }
+        .highlight-text { color: #f1c40f; }
+        .danger-text { color: #e74c3c; }
+        .success-text { color: #2ecc71; }
+        .info-text { color: #3498db; }
+
+        /* Estilos para las demostraciones de Grid */
+        .grid-demo {
+            display: grid;
+            background-color: #2c3e50;
+            padding: 10px;
+            border-radius: 8px;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .grid-item {
+            background-color: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 20px;
+            text-align: center;
+            border: 2px solid #c0392b;
+        }
+
+        /* Demo específica para Anatomía */
+        .grid-anatomy {
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 100px);
+            position: relative;
+        }
+        
+        .grid-line {
+            position: absolute;
+            background-color: #f1c40f;
+            z-index: 10;
+        }
+        .line-v { width: 4px; height: 100%; top: 0; }
+        .line-h { height: 4px; width: 100%; left: 0; }
+
+        /* Demos Varias */
+        .demo-fr { grid-template-columns: 1fr 2fr 1fr; }
+        .demo-areas {
+            grid-template-areas: 
+                "header header header"
+                "sidebar main main"
+                "footer footer footer";
+            grid-template-columns: 1fr 2fr;
+            grid-template-rows: 60px 150px 60px;
+        }
+        
+        .area-header { grid-area: header; background-color: #3498db; }
+        .area-sidebar { grid-area: sidebar; background-color: #9b59b6; }
+        .area-main { grid-area: main; background-color: #2ecc71; }
+        .area-footer { grid-area: footer; background-color: #e67e22; }
+
+    </style>
+</head>
+<body>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <section>
+                <h2>Programación Web I</h2>
+                <h3>La Arquitectura del Layout</h3>
+                <p>Dominio Bidimensional con <span class="highlight-text">CSS Grid</span></p>
+                <br>
+                <p><small>Auxiliar: Arturo Espinoza</small></p>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Flexbox vs. CSS Grid 🥊</h2>
+                    <p>¿Cuándo usar cuál?</p>
+                </section>
+                <section>
+                    <h3>Flexbox (1 Dimensión)</h3>
+                    <p>Diseñado para controlar una sola línea a la vez: <strong>Fila O Columna</strong>.</p>
+                    <p class="info-text">Úsalo para: Navbars, listas de iconos, botones, componentes pequeños.</p>
+                </section>
+                <section>
+                    <h3>Grid (2 Dimensiones)</h3>
+                    <p>Diseñado para controlar el espacio simultáneamente en <strong>Filas Y Columnas</strong>.</p>
+                    <p class="success-text">Úsalo para: La estructura global de la página, galerías de imágenes complejas, layouts de periódico.</p>
+                    <p class="fragment"><small>Nota: ¡Son amigos! Puedes tener un Grid Layout general y que adentro las áreas usen Flexbox.</small></p>
+                </section>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Anatomía de la Rejilla 🧬</h2>
+                    <p>El vocabulario para no perderse.</p>
+                </section>
+                <section>
+                    <h3>Conceptos Clave</h3>
+                    <ol style="font-size: 0.8em;">
+                        <li><strong>Grid Container:</strong> El padre con <code>display: grid;</code>.</li>
+                        <li><strong>Grid Item:</strong> Los hijos directos.</li>
+                        <li><strong>Grid Line:</strong> Las líneas divisorias (se numeran).</li>
+                        <li><strong>Grid Track:</strong> El espacio entre dos líneas (una fila o columna entera).</li>
+                        <li><strong>Grid Cell:</strong> Una celda individual.</li>
+                        <li><strong>Grid Area:</strong> Un rectángulo formado por varias celdas unidas.</li>
+                    </ol>
+                </section>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Construyendo los Cimientos 🏗️</h2>
+                </section>
+                <section>
+                    <h3><code>grid-template-columns</code> y <code>rows</code></h3>
+                    <p style="font-size: 0.8em;">Definimos explícitamente cuántas pistas queremos y de qué tamaño.</p>
+                    <pre><code class="language-css" data-trim>
+.contenedor {
+    display: grid;
+    grid-template-columns: 100px 200px 100px; /* 3 columnas */
+    grid-template-rows: 150px 150px; /* 2 filas */
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>La Unidad Flexible: <code>fr</code> (Fraction)</h3>
+                    <p style="font-size: 0.8em;">Olvídate de los porcentajes difíciles. <code>fr</code> calcula el espacio libre disponible y lo reparte en proporciones.</p>
+                    <pre><code class="language-css" data-trim>
+/* El espacio se divide en 4 (1+2+1). La del medio es el doble de grande. */
+.padre { grid-template-columns: 1fr 2fr 1fr; }
+                    </code></pre>
+                    <div class="grid-demo demo-fr">
+                        <div class="grid-item">1fr</div>
+                        <div class="grid-item">2fr</div>
+                        <div class="grid-item">1fr</div>
+                    </div>
+                </section>
+                <section>
+                    <h3>La Función <code>repeat()</code></h3>
+                    <p style="font-size: 0.8em;">No repitas código como un robot. Usa matemáticas simples.</p>
+                    <pre><code class="language-css" data-trim>
+/* Mal: */
+grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+
+/* Bien: */
+grid-template-columns: repeat(5, 1fr);
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>El Espacio: <code>gap</code></h3>
+                    <p style="font-size: 0.8em;">Al igual que en Flexbox, define las "calles" entre tus filas y columnas.</p>
+                    <pre><code class="language-css" data-trim>
+.padre {
+    gap: 20px; /* Aplica 20px a filas y columnas */
+    /* row-gap: 10px; */
+    /* column-gap: 30px; */
+}
+                    </code></pre>
+                </section>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Posicionando Hijos (Método Numérico) 🔢</h2>
+                </section>
+                <section>
+                    <h3>Expandiendo un Item (Spanning)</h3>
+                    <p style="font-size: 0.8em;">Por defecto un hijo ocupa una celda. Para hacerlo más grande usamos <code>grid-column</code> y <code>grid-row</code>.</p>
+                    <pre><code class="language-css" data-trim>
+.hijo-header {
+    /* Empieza en la línea 1 y termina en la línea 4 */
+    grid-column: 1 / 4; 
+}
+.hijo-alto {
+    /* Empieza donde esté, y ocúpame 2 celdas hacia abajo */
+    grid-row: span 2;
+}
+                    </code></pre>
+                    <p class="fragment danger-text" style="font-size: 0.7em;">Nota: Si tienes 3 columnas, tienes 4 líneas divisorias. Se cuenta la línea, no la celda.</p>
+                </section>
+            </section>
+
+            <section>
+                <section>
+                    <h2>El Método Visual: <br><span class="highlight-text">grid-template-areas</span> 🎨</h2>
+                    <p>Dibujando la estructura con texto.</p>
+                </section>
+                <section>
+                    <h3>Paso 1: Dar nombre a los hijos</h3>
+                    <p style="font-size: 0.8em;">Asignamos una etiqueta interna a cada elemento HTML con <code>grid-area</code>.</p>
+                    <pre><code class="language-css" data-trim>
+.cabecera { grid-area: header; }
+.barra-lateral { grid-area: sidebar; }
+.contenido { grid-area: main; }
+.pie-pagina { grid-area: footer; }
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Paso 2: Dibujar en el Padre</h3>
+                    <pre><code class="language-css" data-trim data-noescape>
+.contenedor {
+    display: grid;
+    grid-template-columns: 1fr 3fr; /* Dos columnas */
+    <span class="fragment highlight-current-blue">grid-template-areas: 
+      "header header"
+      "sidebar main"
+      "footer footer";</span>
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Resultado Visual</h3>
+                    <div class="grid-demo demo-areas">
+                        <div class="grid-item area-header">header</div>
+                        <div class="grid-item area-sidebar">sidebar</div>
+                        <div class="grid-item area-main">main</div>
+                        <div class="grid-item area-footer">footer</div>
+                    </div>
+                </section>
+                <section>
+                    <h3>El Truco para Espacios Vacíos</h3>
+                    <p style="font-size: 0.8em;">Si quieres dejar una celda completamente vacía en tu diseño, usa un punto <code>.</code>.</p>
+                    <pre><code class="language-css" data-trim>
+grid-template-areas: 
+    "header header header"
+    "sidebar . main" /* El medio estará vacío */
+    "footer footer footer";
+                    </code></pre>
+                </section>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Alineación dentro de las celdas 🎯</h2>
+                </section>
+                <section>
+                    <h3><code>justify-items</code> y <code>align-items</code></h3>
+                    <p style="font-size: 0.7em;">Se aplica al <strong>Padre</strong>. Controla cómo se alinean TODOS los hijos dentro de su propia celda. (Valores: start, end, center, stretch).</p>
+                    <pre><code class="language-css" data-trim>
+.padre { justify-items: center; /* Alinea en eje X dentro de la celda */ }
+.padre { align-items: center;   /* Alinea en eje Y dentro de la celda */ }
+                    </code></pre>
+                </section>
+                <section>
+                    <h3><code>justify-content</code> y <code>align-content</code></h3>
+                    <p style="font-size: 0.7em;">Se aplica al <strong>Padre</strong>. Controla la cuadrícula ENTERA si el contenedor es más grande que las pistas definidas.</p>
+                    <pre><code class="language-css" data-trim>
+/* Si mi contenedor mide 1000px y mi grid suma solo 500px... */
+.padre { justify-content: center; /* Centra el grid entero al medio del div */ }
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>El Atajo Definitivo: <code>place-items</code> y <code>place-content</code></h3>
+                    <p style="font-size: 0.8em;">Escribe todo de golpe (Alineación Y / Alineación X).</p>
+                    <pre><code class="language-css" data-trim>
+.padre {
+    /* align-items + justify-items */
+    place-items: center center; 
+}
+                    </code></pre>
+                </section>
+            </section>
+
+            <section>
+                <h2>Desafío de Clase 💻</h2>
+                <h3>El Periódico Moderno</h3>
+                <div style="text-align: left; font-size: 0.8em;">
+                    <p><strong>Requisitos:</strong></p>
+                    <ul>
+                        <li>HTML: <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, dos <code>&lt;aside&gt;</code> para publicidad, y <code>&lt;footer&gt;</code>.</li>
+                        <li>Usar CSS Grid con <code>grid-template-areas</code>.</li>
+                        <li>Las columnas deben ser: 1fr (PubliIzq), 3fr (Main), 1fr (PubliDer).</li>
+                        <li>El Header y el Footer deben atravesar toda la pantalla.</li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: false, 
+            controls: true, 
+            progress: true, 
+            center: true, 
+            transition: 'slide', 
+            plugins: [ RevealHighlight ] 
+        });
+    </script>
+</body>
+</html>

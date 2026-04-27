@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 2: Media Queries</title>
+    
+    <!-- CSS de Reveal.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <!-- NUEVO TEMA: 'night' (fondo oscuro con contrastes) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/night.min.css" id="theme">
+    <!-- Tema para resaltar código fuente -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/monokai.min.css">
+
+    <!-- NUEVA TIPOGRAFÍA: Poppins desde Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Aplicando la nueva tipografía a toda la presentación */
+        .reveal, .reveal h1, .reveal h2, .reveal h3, .reveal h4 { 
+            font-family: 'Poppins', sans-serif; 
+            text-transform: none; 
+        }
+        
+        /* NUEVA PALETA DE COLORES (Estilo Neón / Cyberpunk suave) */
+        .highlight-text { color: #00f2fe; } /* Cyan Neón */
+        .danger-text { color: #ff0844; }   /* Rojo Intenso */
+        .success-text { color: #00b09b; }  /* Verde Neón */
+        .info-text { color: #b5179e; }     /* Púrpura */
+
+        /* Estilos para demostraciones interactivas */
+        .viewport-demo {
+            border: 4px solid #4a4e69;
+            border-radius: 12px;
+            margin: 20px auto;
+            position: relative;
+            background: #1a1a2e; /* Fondo muy oscuro */
+            overflow: hidden;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.2); /* Sombra cyan */
+        }
+        
+        .viewport-demo.desktop { width: 800px; height: 300px; }
+        .viewport-demo.tablet { width: 600px; height: 300px; }
+        .viewport-demo.mobile { width: 320px; height: 400px; }
+
+        .demo-nav {
+            background: #16213e; /* Cabecera oscura */
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.5s ease;
+            border-bottom: 2px solid #e94560; /* Borde rojo neón */
+        }
+
+        .demo-nav-links {
+            display: flex;
+            gap: 15px;
+            transition: all 0.5s ease;
+        }
+
+        .demo-link {
+            background: #e94560; /* Rojo neón */
+            color: white;
+            padding: 5px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+
+        .demo-content {
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            transition: all 0.5s ease;
+        }
+
+        .demo-card {
+            background: #0f3460; /* Azul profundo */
+            border: 1px solid #4a4e69;
+            flex: 1;
+            height: 140px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #00f2fe; /* Texto cyan */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        /* Simulación de Media Query interna para la demo */
+        .viewport-demo.mobile .demo-nav { flex-direction: column; gap: 15px; }
+        .viewport-demo.mobile .demo-content { flex-direction: column; }
+        .viewport-demo.mobile .demo-nav-links { flex-direction: column; width: 100%; text-align: center; }
+        .viewport-demo.mobile .demo-link { display: block; width: auto; }
+        
+        .viewport-demo.tablet .demo-content { flex-wrap: wrap; }
+        .viewport-demo.tablet .demo-card { flex-basis: 40%; }
+    </style>
+</head>
+<body>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- SLIDE 1: Portada -->
+            <section>
+                <h2>Programación Web I</h2>
+                <h3>Diseño Responsivo</h3>
+                <p>Adaptabilidad Absoluta con <span class="highlight-text">Media Queries</span></p>
+                <br>
+                <p><small>Auxiliar: Pan</small></p>
+            </section>
+
+            <!-- SLIDE 2: ¿Qué es el Diseño Responsivo? -->
+            <section>
+                <section>
+                    <h2>El Problema del Mundo Real 🌍</h2>
+                </section>
+                <section>
+                    <h3>¿Qué es el Diseño Responsivo?</h3>
+                    <p style="font-size: 0.8em;">Es la técnica que permite que una <strong>única</strong> base de código (HTML/CSS) adapte su estructura, tamaño y comportamiento al dispositivo en el que se está viendo.</p>
+                    <p class="fragment danger-text" style="font-size: 0.8em;">Antes, las empresas hacían dos sitios web: <code>www.sitio.com</code> y <code>m.sitio.com</code>. Era una pesadilla de mantenimiento.</p>
+                </section>
+                <section>
+                    <h3>La Etiqueta Obligatoria (Viewport)</h3>
+                    <p style="font-size: 0.8em;">Sin esta etiqueta, el celular intentará renderizar la página de escritorio alejada (zoom out), haciendo el texto ilegible.</p>
+                    <pre><code class="language-html" data-trim>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    </code></pre>
+                    <p class="fragment success-text" style="font-size: 0.7em;">Regla de oro: Si tu página se ve "chiquita" en el celular en lugar de reordenarse, olvidaste el Viewport.</p>
+                </section>
+            </section>
+
+            <!-- SLIDE 3: Enfoques -->
+            <section>
+                <section>
+                    <h2>Las Dos Filosofías 🎭</h2>
+                    <p>Desktop-First vs Mobile-First</p>
+                </section>
+                <section>
+                    <h3>Desktop-First (De Mayor a Menor)</h3>
+                    <ul style="font-size: 0.8em;">
+                        <li>Se diseña primero para la PC.</li>
+                        <li>Se usa <code>max-width</code> para "destruir" o apilar el diseño en pantallas pequeñas.</li>
+                        <li><strong class="info-text">Ideal para:</strong> Dashboards o paneles administrativos complejos.</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Mobile-First (De Menor a Mayor)</h3>
+                    <ul style="font-size: 0.8em;">
+                        <li>Se diseña primero para el celular. El CSS base es muy ligero.</li>
+                        <li>Se usa <code>min-width</code> para "construir" columnas a medida que la pantalla crece.</li>
+                        <li><strong class="success-text">Ideal para:</strong> El 90% de la web. Google penaliza en el SEO a las páginas que no priorizan móviles.</li>
+                    </ul>
+                </section>
+            </section>
+
+            <!-- SLIDE 4: Sintaxis -->
+            <section>
+                <section>
+                    <h2>La Sintaxis Básica 🎙️</h2>
+                    <p>Preguntándole al Navegador.</p>
+                </section>
+                <section>
+                    <h3>¿Qué es una Media Query?</h3>
+                    <p style="font-size: 0.8em;">Es un bloque condicional (como un <code>if</code> en programación). Si la pantalla cumple la condición, se aplica el CSS interior.</p>
+                    <pre><code class="language-css" data-trim>
+/* CSS base (ej. Escritorio) */
+.tarjeta { width: 50%; }
+
+@media (max-width: 768px) {
+    /* SOLO se activa si la pantalla mide 768px o menos */
+    .tarjeta { 
+        width: 100%; 
+    }
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>La Cascada (¡El error mortal!) ⚠️</h3>
+                    <p style="font-size: 0.8em;">El CSS se lee de arriba hacia abajo. Tu Media Query <strong>DEBE</strong> ir debajo de la regla original para poder sobreescribirla.</p>
+                    <div style="display: flex; gap: 20px;">
+                        <div style="flex: 1;">
+                            <p style="font-size: 0.6em;" class="danger-text">MAL ❌</p>
+                            <pre><code class="language-css" data-trim style="font-size: 0.6em;">
+@media (max-width: 768px) {
+    h1 { font-size: 20px; }
+}
+
+/* Esta regla aplasta a la Media Query */
+h1 { font-size: 50px; } 
+                            </code></pre>
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="font-size: 0.6em;" class="success-text">BIEN ✅</p>
+                            <pre><code class="language-css" data-trim style="font-size: 0.6em;">
+h1 { font-size: 50px; }
+
+@media (max-width: 768px) {
+    /* Gana por estar más abajo en la cascada */
+    h1 { font-size: 20px; } 
+}
+                            </code></pre>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- SLIDE 5: Breakpoints y Lógica -->
+            <section>
+                <section>
+                    <h2>Puntos de Ruptura (Breakpoints) 🚧</h2>
+                </section>
+                <section>
+                    <h3>El mito de los dispositivos</h3>
+                    <p style="font-size: 0.8em;">No intenten crear un CSS para el "iPhone 15" y otro para el "Samsung S24".</p>
+                    <p class="fragment info-text"><strong>La regla real:</strong> Pon un breakpoint exactamente en los píxeles donde TU diseño se rompa o deje de leerse bien.</p>
+                </section>
+                <section>
+                    <h3>Operadores Lógicos (and / or)</h3>
+                    <p style="font-size: 0.8em;">Podemos ser muy específicos limitando rangos con la palabra <code>and</code>, o usando la coma <code>,</code> que funciona como un operador "OR".</p>
+                    <pre><code class="language-css" data-trim>
+/* AND: Rango estricto (Solo Tablets) */
+@media (min-width: 481px) and (max-width: 768px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* OR (coma): Si es móvil pequeño O si es muy ancho */
+@media (max-width: 320px), (min-width: 1500px) {
+    .alerta { display: block; }
+}
+                    </code></pre>
+                </section>
+            </section>
+
+            <!-- SLIDE 6: MÁS ALLÁ DEL ANCHO (NUEVO) -->
+            <section>
+                <section>
+                    <h2>Nivel Dios 🚀</h2>
+                    <p>Más allá del ancho de la pantalla.</p>
+                </section>
+                <section>
+                    <h3>1. Orientación (Rotar el Celular)</h3>
+                    <p style="font-size: 0.8em;">A veces necesitamos arreglar el diseño si el usuario voltea su dispositivo horizontalmente.</p>
+                    <pre><code class="language-css" data-trim>
+@media (orientation: landscape) {
+    /* Se aplica si el ancho es mayor que el alto */
+    .menu-superior { height: 50px; }
+}
+
+@media (orientation: portrait) {
+    /* Se aplica si el alto es mayor que el ancho (celular vertical) */
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>2. El Problema del "Hover" 👆</h3>
+                    <p style="font-size: 0.8em;">Los celulares NO tienen ratón, por lo tanto, el <code>:hover</code> se queda "pegado" al tocar la pantalla. Podemos evitar estilos hover en móviles así:</p>
+                    <pre><code class="language-css" data-trim>
+/* Solo aplica este hover si el dispositivo TIENE un puntero principal (mouse) */
+@media (hover: hover) {
+    .boton:hover {
+        transform: scale(1.1);
+        background-color: blue;
+    }
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>3. ¡Modo Oscuro Automático! 🌙</h3>
+                    <p style="font-size: 0.8em;">Podemos detectar si el usuario tiene su sistema operativo en Modo Oscuro o Claro y reaccionar a ello directamente con CSS.</p>
+                    <pre><code class="language-css" data-trim>
+/* Si el celular o PC del usuario está en modo oscuro... */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #121212;
+        color: #ffffff;
+    }
+}
+                    </code></pre>
+                    <p class="fragment success-text" style="font-size: 0.7em;">¡Esto les dará puntos extra en cualquier proyecto final!</p>
+                </section>
+            </section>
+
+            <!-- SLIDE 7: Demo Visual -->
+            <section>
+                <h2>El Flujo Responsivo</h2>
+                <div class="viewport-demo desktop" id="demoBox">
+                    <nav class="demo-nav">
+                        <div class="logo" style="color: white; font-weight: bold;">WEB<span class="info-text">I</span></div>
+                        <div class="demo-nav-links">
+                            <div class="demo-link">Inicio</div>
+                            <div class="demo-link">Cursos</div>
+                            <div class="demo-link">Contacto</div>
+                        </div>
+                    </nav>
+                    <div class="demo-content">
+                        <div class="demo-card">Box Model</div>
+                        <div class="demo-card">Flexbox</div>
+                        <div class="demo-card">Grid Layout</div>
+                    </div>
+                </div>
+                
+                <!-- Botones para simular el cambio de pantalla -->
+                <div style="margin-top: 20px;">
+                    <button onclick="changeViewport('desktop')" style="padding: 10px 20px; background: #00f2fe; color: #1a1a2e; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 0 5px;">💻 PC (>1024px)</button>
+                    <button onclick="changeViewport('tablet')" style="padding: 10px 20px; background: #b5179e; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 0 5px;">📱 Tablet (768px)</button>
+                    <button onclick="changeViewport('mobile')" style="padding: 10px 20px; background: #ff0844; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 0 5px;">📱 Móvil (<480px)</button>
+                </div>
+
+                <script>
+                    function changeViewport(size) {
+                        const box = document.getElementById('demoBox');
+                        box.className = 'viewport-demo ' + size;
+                    }
+                </script>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Scripts de Reveal.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: false, 
+            controls: true, 
+            progress: true, 
+            center: true, 
+            transition: 'slide', 
+            plugins: [ RevealHighlight ] 
+        });
+    </script>
+</body>
+</html>

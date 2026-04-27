@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clase 1: Flexbox y Box Model</title>
+    
+    <!-- CSS de Reveal.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <!-- Tema visual (puedes cambiar 'dracula' por 'black', 'white', 'league', etc.) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/dracula.min.css" id="theme">
+    <!-- Tema para resaltar código fuente -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/monokai.min.css">
+
+    <style>
+        /* Estilos personalizados para la presentación */
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            text-transform: none; /* Evita que todo esté en mayúsculas */
+        }
+        
+        .box-model-demo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .box {
+            width: 200px;
+            height: 100px;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            line-height: 100px;
+            font-size: 20px;
+            border: 10px solid #f1c40f;
+            padding: 20px;
+            margin: 20px;
+            /* La propiedad que discutiremos */
+            /* box-sizing: border-box; */
+            transition: all 0.5s ease;
+        }
+
+        .box-with-sizing {
+            box-sizing: border-box;
+            background-color: #2ecc71;
+        }
+
+        .flex-demo-container {
+            display: flex;
+            background-color: #2c3e50;
+            padding: 10px;
+            border-radius: 8px;
+            min-height: 200px;
+            margin-top: 20px;
+        }
+
+        .flex-item {
+            background-color: #e74c3c;
+            color: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 4px;
+            font-size: 24px;
+            text-align: center;
+            flex: 1; /* Para que ocupen espacio en algunos ejemplos */
+        }
+
+        .flex-row { flex-direction: row; }
+        .flex-col { flex-direction: column; align-items: center;}
+        
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        
+        .align-center { align-items: center; }
+
+        .highlight-text { color: #f1c40f; }
+        .danger-text { color: #e74c3c; }
+        .success-text { color: #2ecc71; }
+        
+        /* Nuevos estilos para el diagrama del Box Model */
+        .diagram-margin { background-color: #f9cc9d; padding: 15px; border: 2px dashed #d35400; color: #d35400; font-weight: bold; border-radius: 5px; font-size: 0.8em;}
+        .diagram-border { background-color: #f1c40f; padding: 15px; border: 5px solid #2c3e50; color: #2c3e50; }
+        .diagram-padding { background-color: #c8e6c9; padding: 15px; border: 2px dashed #27ae60; color: #27ae60; }
+        .diagram-content { background-color: #3498db; padding: 30px; border: 1px solid #2980b9; color: white; }
+        
+        /* Más utilidades Flexbox */
+        .justify-end { justify-content: flex-end; }
+        .justify-around { justify-content: space-around; }
+        .justify-evenly { justify-content: space-evenly; }
+        .align-start { align-items: flex-start; }
+        .align-end { align-items: flex-end; }
+        
+        /* Nuevas utilidades para la ampliación */
+        .align-content-center { align-content: center; flex-wrap: wrap; }
+        .align-content-between { align-content: space-between; flex-wrap: wrap; }
+        .gap-20 { gap: 20px; }
+        .order-demo-1 { order: 2; }
+        .order-demo-2 { order: -1; }
+        .order-demo-3 { order: 1; }
+        .align-self-start { align-self: flex-start; }
+        .align-self-end { align-self: flex-end; }
+    </style>
+</head>
+<body>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- SLIDE 1: Portada -->
+            <section>
+                <h2>Programación Web I</h2>
+                <h3>Fundamentos y Diseño Unidimensional</h3>
+                <p>Repaso de <span class="highlight-text">Box Model</span> y Dominio de <span class="highlight-text">Flexbox</span></p>
+                <br>
+                <p><small>Auxiliar: Arturo Espinoza</small></p>
+            </section>
+
+            <!-- SLIDE 2: El problema de la IA -->
+            <section>
+                <section>
+                    <h2>El Elefante en la Habitación 🐘</h2>
+                    <p>Copiar y pegar de la IA sin entender el <strong>por qué</strong>.</p>
+                </section>
+                <section>
+                    <h3>La Realidad</h3>
+                    <ul>
+                        <li>La IA es una excelente herramienta, pero un pésimo maestro.</li>
+                        <li>Genera <strong>"Deuda Técnica"</strong>: Código que funciona mágicamente hoy, pero se romperá mañana.</li>
+                        <li class="danger-text">Si un elemento se sale de su contenedor, la IA no te salvará si no entiendes la base.</li>
+                    </ul>
+                    <p class="fragment highlight-text">Hoy vamos a entender el POR QUÉ.</p>
+                </section>
+            </section>
+
+            <!-- SLIDE 3: Box Model -->
+            <section>
+                <section>
+                    <h2>Repaso Express: <br><span class="highlight-text">El Box Model</span></h2>
+                    <p>Todo en la web es una caja rectangular.</p>
+                </section>
+                <section>
+                    <h3>Las 4 Capas de la Caja</h3>
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+                        <div style="flex: 1; text-align: left; font-size: 0.8em;">
+                            <ol>
+                                <li><strong>Content:</strong> Texto, imagen.</li>
+                                <li><strong>Padding:</strong> Espacio interior.</li>
+                                <li><strong>Border:</strong> La pared.</li>
+                                <li><strong>Margin:</strong> Espacio exterior. Empuja a los vecinos.</li>
+                            </ol>
+                        </div>
+                        <div style="flex: 1;">
+                            <!-- Diagrama visual de capas CSS -->
+                            <div class="diagram-margin">Margin
+                                <div class="diagram-border">Border
+                                    <div class="diagram-padding">Padding
+                                        <div class="diagram-content">Content</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3>El Problema Matemático 🧮</h3>
+                    <p>Si tengo un `div` con <code>width: 200px</code>, y le agrego <code>padding: 20px</code> y <code>border: 5px</code>...</p>
+                    <h4 class="fragment">¿Cuánto espacio real ocupa en la pantalla?</h4>
+                    <p class="fragment danger-text"><strong>250px!</strong> (200 + 20 izq + 20 der + 5 izq + 5 der)</p>
+                    <p class="fragment"><em>¡Por esto sus diseños se rompen al poner porcentajes (ej. 50% + 50%) y añadir bordes!</em></p>
+                </section>
+                <section>
+                    <h3>La Solución Mágica ✨</h3>
+                    <pre><code class="language-css" data-trim data-noescape>
+* {
+    box-sizing: border-box;
+}
+                    </code></pre>
+                    <p>Obliga al navegador a incluir el <code>padding</code> y <code>border</code> <strong>DENTRO</strong> del ancho que definiste.</p>
+                    <p class="success-text">Regla: Esto debe ir en TODOS sus proyectos.</p>
+                </section>
+                <section>
+                    <h3>Visualización</h3>
+                    <div class="box-model-demo">
+                        <div>
+                            <p>Sin <code>border-box</code></p>
+                            <div class="box">200px</div>
+                        </div>
+                        <div class="fragment">
+                            <p>Con <code>border-box</code></p>
+                            <div class="box box-with-sizing">200px</div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- SLIDE 4: Flexbox Introducción -->
+            <section>
+                <section>
+                    <h2>Introducción a <br><span class="highlight-text">Flexbox</span></h2>
+                    <p>(Flexible Box Layout)</p>
+                </section>
+                <section>
+                    <h3>¿Qué es Flexbox?</h3>
+                    <p>Un módulo de diseño CSS para alinear y distribuir espacio en <strong>UNA DIMENSIÓN</strong> (filas o columnas).</p>
+                    <p>Resuelve problemas complejos de alineación que antes requerían trucos con <code>float</code> o márgenes negativos.</p>
+                </section>
+                <section>
+                    <h3>La Regla de Oro: Padres e Hijos 👨‍👧‍👦</h3>
+                    <ul>
+                        <li><strong>Flex Container (Padre):</strong> El elemento que tiene <code>display: flex;</code>. Dicta las reglas.</li>
+                        <li><strong>Flex Items (Hijos):</strong> Los elementos hijos <em>directos</em>. Ellos obedecen.</li>
+                    </ul>
+                    <p><small>Nota: Los "nietos" no se ven afectados directamente por el padre flex.</small></p>
+                </section>
+                <section>
+                    <h3>Activando el Poder</h3>
+                    <pre><code class="language-css" data-trim>
+.contenedor {
+    display: flex;
+}
+                    </code></pre>
+                    <p>Efecto Inmediato: Todos los hijos se colocan en línea horizontal.</p>
+                </section>
+            </section>
+
+            <!-- SLIDE 5: Ejes y Dirección -->
+            <section>
+                <section>
+                    <h2>Geometría Flexbox: <br><span class="highlight-text">Los Dos Ejes</span></h2>
+                </section>
+                <section>
+                    <h3>Main Axis & Cross Axis</h3>
+                    <ul>
+                        <li><strong>Main Axis (Eje Principal):</strong> La dirección principal en la que fluyen los elementos.</li>
+                        <li><strong>Cross Axis (Eje Cruzado):</strong> Perpendicular al eje principal.</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3><code>flex-direction</code></h3>
+                    <p>Define cuál será el Eje Principal.</p>
+                    <pre><code class="language-css" data-trim>
+.padre { flex-direction: row; /* o column */ }
+                    </code></pre>
+                    <div style="display:flex; justify-content: space-around;">
+                        <div>
+                            <p><code>row</code> (Por defecto)</p>
+                            <div class="flex-demo-container flex-row">
+                                <div class="flex-item" style="flex:0;">1</div>
+                                <div class="flex-item" style="flex:0;">2</div>
+                            </div>
+                        </div>
+                        <div>
+                            <p><code>column</code></p>
+                            <div class="flex-demo-container flex-col">
+                                <div class="flex-item" style="flex:0; width:50px;">1</div>
+                                <div class="flex-item" style="flex:0; width:50px;">2</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- SLIDE 6: Alineación -->
+            <section>
+                <section>
+                    <h2>Alineando Elementos 🎯</h2>
+                </section>
+                <section>
+                    <h3><code>justify-content</code></h3>
+                    <p style="font-size: 0.8em;">Distribuye el espacio sobrante en el <strong>Eje Principal</strong>.</p>
+                    
+                    <div style="font-size: 0.7em; text-align: left; margin-bottom: 5px;"><strong>flex-end:</strong> Empuja todo al final del contenedor.</div>
+                    <div class="flex-demo-container flex-row justify-end" style="min-height: 60px; margin-top:0;">
+                        <div class="flex-item" style="flex:0; padding:10px;">A</div>
+                        <div class="flex-item" style="flex:0; padding:10px;">B</div>
+                    </div>
+
+                     <div style="font-size: 0.7em; text-align: left; margin-bottom: 5px; margin-top: 15px;"><strong>space-between:</strong> Primero al inicio, último al final. (Ideal para Navbars)</div>
+                     <div class="flex-demo-container flex-row justify-between" style="min-height: 60px; margin-top:0;">
+                        <div class="flex-item" style="flex:0; padding:10px;">Logo</div>
+                        <div class="flex-item" style="flex:0; padding:10px;">Menú</div>
+                    </div>
+
+                    <div style="font-size: 0.7em; text-align: left; margin-bottom: 5px; margin-top: 15px;"><strong>space-evenly:</strong> Espacio EXACTAMENTE igual entre todos los elementos y los bordes.</div>
+                     <div class="flex-demo-container flex-row justify-evenly" style="min-height: 60px; margin-top:0;">
+                        <div class="flex-item" style="flex:0; padding:10px;">A</div>
+                        <div class="flex-item" style="flex:0; padding:10px;">B</div>
+                        <div class="flex-item" style="flex:0; padding:10px;">C</div>
+                    </div>
+                </section>
+                <section>
+                    <h3><code>align-items</code></h3>
+                    <p style="font-size: 0.8em;">Alinea elementos en el <strong>Eje Cruzado</strong> (perpendicular).</p>
+
+                    <div style="display: flex; gap: 20px;">
+                        <div style="flex: 1;">
+                            <p style="font-size: 0.6em;"><code>flex-start</code></p>
+                            <div class="flex-demo-container flex-row align-start" style="height: 150px; margin-top:0;">
+                                <div class="flex-item" style="flex:0; padding:10px;">A</div>
+                                <div class="flex-item" style="flex:0; padding:10px;">B</div>
+                            </div>
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="font-size: 0.6em;"><code>center</code></p>
+                            <div class="flex-demo-container flex-row align-center" style="height: 150px; margin-top:0;">
+                                <div class="flex-item" style="flex:0; padding:10px;">A</div>
+                                <div class="flex-item" style="flex:0; padding:10px;">B</div>
+                            </div>
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="font-size: 0.6em;"><code>flex-end</code></p>
+                            <div class="flex-demo-container flex-row align-end" style="height: 150px; margin-top:0;">
+                                <div class="flex-item" style="flex:0; padding:10px;">A</div>
+                                <div class="flex-item" style="flex:0; padding:10px;">B</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3>Propiedades de los Hijos 👶</h3>
+                    <p style="font-size: 0.8em;">¿Qué pasa si sobra espacio y queremos que un hijo crezca?</p>
+                    <p style="margin-bottom: 0;"><code>flex-grow</code></p>
+                    <div class="flex-demo-container flex-row">
+                        <div class="flex-item" style="flex:1; padding: 10px;">grow: 1</div>
+                        <div class="flex-item" style="flex:2; background:#8e44ad; padding: 10px;">grow: 2</div>
+                        <div class="flex-item" style="flex:1; padding: 10px;">grow: 1</div>
+                    </div>
+                    <p style="font-size: 0.6em;" class="fragment">El elemento morado exige tomar el <strong>doble</strong> del espacio sobrante que sus hermanos.</p>
+                </section>
+                <section>
+                    <h3><code>flex-shrink</code></h3>
+                    <p style="font-size: 0.8em;">¿Qué pasa si <strong>FALTA</strong> espacio? Define la capacidad de un elemento para encogerse.</p>
+                    <pre><code class="language-css" data-trim>
+.hijo-resistente { flex-shrink: 0; /* 0 = NO te encojas, mantén tu tamaño */ }
+.hijo-normal { flex-shrink: 1; /* 1 = Encógete si es necesario (Por defecto) */ }
+                    </code></pre>
+                    <p style="font-size: 0.6em;">Útil para logos, íconos o imágenes que no queremos que se deformen cuando la pantalla se hace pequeña.</p>
+                </section>
+                <section>
+                    <h3><code>flex-basis</code></h3>
+                    <p style="font-size: 0.8em;">El tamaño <strong>ideal o inicial</strong> del elemento antes de que empiece a crecer (grow) o encogerse (shrink).</p>
+                    <pre><code class="language-css" data-trim>
+.hijo { flex-basis: 250px; } /* Funciona como width o height dependiendo del eje principal */
+                    </code></pre>
+                    <p style="font-size: 0.6em;">Es mucho más seguro y semántico usar <code>flex-basis</code> que <code>width</code> cuando estamos trabajando dentro de un contenedor Flexbox.</p>
+                </section>
+                <section>
+                    <h3>El Atajo Definitivo: <code>flex</code></h3>
+                    <p style="font-size: 0.8em;">Nadie en la vida real escribe grow, shrink y basis por separado. Usamos la propiedad abreviada.</p>
+                    <pre><code class="language-css" data-trim>
+/* Sintaxis: flex: grow | shrink | basis */
+.hijo { flex: 1 0 200px; }
+                    </code></pre>
+                    <p style="font-size: 0.6em;" class="fragment success-text"><em>Traducción: "Crece si hay espacio de sobra (1), nunca te encojas si falta espacio (0), y tu tamaño ideal de partida es 200px".</em></p>
+                </section>
+                <section>
+                    <h3><code>order</code></h3>
+                    <p style="font-size: 0.8em;">Cambia el orden visual sin tocar el HTML. Por defecto todos los elementos tienen <code>order: 0</code>.</p>
+                    <div class="flex-demo-container flex-row" style="justify-content: center;">
+                        <div class="flex-item order-demo-1" style="flex:0;">HTML 1<br><small>(order: 2)</small></div>
+                        <div class="flex-item order-demo-2" style="background:#8e44ad; flex:0;">HTML 2<br><small>(order: -1)</small></div>
+                        <div class="flex-item order-demo-3" style="flex:0;">HTML 3<br><small>(order: 1)</small></div>
+                    </div>
+                    <p style="font-size: 0.6em; margin-top: 20px;">El orden visual ahora es: HTML 2, HTML 3, HTML 1. <br><span class="danger-text">Cuidado:</span> Solo afecta lo visual. Un lector de pantalla para personas no videntes seguirá leyendo el HTML en su orden original.</p>
+                </section>
+                <section>
+                    <h3><code>align-self</code></h3>
+                    <p style="font-size: 0.8em;">Permite a un hijo "rebelarse" y anular el <code>align-items</code> establecido por su padre.</p>
+                    <div class="flex-demo-container flex-row align-center" style="height: 200px;">
+                        <div class="flex-item align-self-start" style="flex:0;">align-self:<br>flex-start</div>
+                        <div class="flex-item" style="flex:0;">Alineado<br>por el padre<br>(center)</div>
+                        <div class="flex-item align-self-end" style="background:#8e44ad; flex:0;">align-self:<br>flex-end</div>
+                    </div>
+                </section>
+                <section>
+                    <h3>El Truco Definitivo (El Santo Grial) 🏆</h3>
+                    <p>Centrar cualquier cosa vertical y horizontalmente:</p>
+                    <pre><code class="language-css" data-trim data-noescape>
+.centrador-perfecto {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    <span class="fragment highlight-current-blue">height: 100vh; /* Requiere altura definida */</span>
+}
+                    </code></pre>
+                </section>
+            </section>
+
+            <!-- SLIDE 7: Envoltura -->
+            <section>
+                <section>
+                    <h2>Manejando el Desbordamiento 🌊</h2>
+                </section>
+                <section>
+                    <h3><code>flex-wrap</code></h3>
+                    <p>Por defecto, Flexbox intentará aplastar todos los hijos en una sola línea (<code>nowrap</code>).</p>
+                    <pre><code class="language-css" data-trim>
+.padre { flex-wrap: wrap; }
+                    </code></pre>
+                    <p>Con <code>wrap</code>, si no caben, saltan a la siguiente línea abajo. ¡Clave para grillas de productos!</p>
+                </section>
+                <section>
+                    <h3><code>align-content</code> (Varias Líneas)</h3>
+                    <p style="font-size: 0.7em;">Solo funciona si hay <code>flex-wrap: wrap</code> y el contenido ocupa múltiples líneas. Distribuye todo el bloque de líneas en el eje cruzado (muy similar a justify-content pero en el otro eje).</p>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;">
+                            <p style="font-size: 0.6em;"><code>center</code></p>
+                            <div class="flex-demo-container flex-row align-content-center" style="height: 200px; margin-top:0;">
+                                <div class="flex-item" style="flex: 0 0 40%; padding:5px;">1</div>
+                                <div class="flex-item" style="flex: 0 0 40%; padding:5px;">2</div>
+                                <div class="flex-item" style="flex: 0 0 40%; padding:5px;">3</div>
+                                <div class="flex-item" style="flex: 0 0 40%; padding:5px;">4</div>
+                            </div>
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="font-size: 0.6em;"><code>space-between</code></p>
+                            <div class="flex-demo-container flex-row align-content-between" style="height: 200px; margin-top:0;">
+                                <div class="flex-item" style="flex: 0 0 40%; padding:5px;">1</div>
+                                <div class="flex-item" style="flex: 0 0 40%; padding:5px;">2</div>
+                                <div class="flex-item" style="flex: 0 0 40%; padding:5px;">3</div>
+                                <div class="flex-item" style="flex: 0 0 40%; padding:5px;">4</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3>El Atajo del Padre: <code>flex-flow</code></h3>
+                    <p>Combina <code>flex-direction</code> y <code>flex-wrap</code> en una sola línea de código.</p>
+                    <pre><code class="language-css" data-trim>
+.padre { 
+    /* Sintaxis: flex-direction | flex-wrap */
+    flex-flow: row wrap; 
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>La Maravilla Moderna: <code>gap</code> ✨</h3>
+                    <p style="font-size: 0.8em;">Olvídense de los márgenes confusos para separar elementos y lidiar con el margen extra al final. <code>gap</code> crea un espacio exacto <strong>solo entre</strong> los ítems.</p>
+                    <pre><code class="language-css" data-trim>
+.padre { gap: 20px; /* o '10px 20px' para fila/columna */ }
+                    </code></pre>
+                    <div class="flex-demo-container flex-row gap-20" style="justify-content: center;">
+                        <div class="flex-item" style="flex:0;">Caja A</div>
+                        <div class="flex-item" style="flex:0;">Caja B</div>
+                        <div class="flex-item" style="flex:0;">Caja C</div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- SLIDE 8: Práctica -->
+            <section>
+                <h2>Desafío de Clase 💻</h2>
+                <h3>Crear un Navbar</h3>
+                <div style="text-align: left;">
+                    <p><strong>Requisitos:</strong></p>
+                    <ul>
+                        <li>Un contenedor <code>&lt;nav&gt;</code> padre.</li>
+                        <li>Un logo <code>&lt;h1&gt;</code> a la izquierda.</li>
+                        <li>Una lista <code>&lt;ul&gt;</code> a la derecha.</li>
+                        <li>Los enlaces deben estar en horizontal.</li>
+                        <li class="danger-text"><strong>¡Prohibido usar <code>float</code> o márgenes automáticos para alinear!</strong> Todo con Flexbox.</li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Scripts de Reveal.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        // Inicializar la presentación
+        Reveal.initialize({
+            hash: false, // Desactivado para evitar errores de seguridad en el historial del entorno de vista previa
+            controls: true, // Flechas de control
+            progress: true, // Barra de progreso inferior
+            center: true, // Centrar verticalmente las diapositivas
+            transition: 'slide', // Efecto de transición (none/fade/slide/convex/concave/zoom)
+            plugins: [ RevealHighlight ] // Habilita el resaltado de sintaxis
+        });
+    </script>
+</body>
+</html>

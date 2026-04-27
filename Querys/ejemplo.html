@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- LA REGLA DE ORO: El Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Responsiva - Web I</title>
+    
+    <style>
+        /* =========================================
+           1. VARIABLES Y CSS BASE (Escritorio)
+           ========================================= */
+        :root {
+            /* Variables para cambiar de color fácilmente */
+            --bg-color: #f8fafc;
+            --text-color: #0f172a;
+            --card-bg: #ffffff;
+            --primary-color: #0ea5e9;
+            --header-bg: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box; /* Recordando la Clase 1 */
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            /* Transición suave para cuando cambie el modo oscuro */
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* --- Header y Nav --- */
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* --- Sección Principal (Hero) --- */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .hero h1 {
+            font-size: 3rem; /* Letra gigante para escritorio */
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        /* --- Tarjetas (Flexbox) --- */
+        .contenedor-tarjetas {
+            display: flex;
+            gap: 30px;
+            padding: 0 40px 60px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tarjeta {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex: 1; /* Todas crecen por igual en escritorio */
+            text-align: center;
+        }
+
+        .boton {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        /* --- Indicador visual didáctico para los alumnos --- */
+        .indicador-pantalla {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        .indicador-pantalla::after {
+            content: "🖥️ Escritorio (> 768px)";
+        }
+
+        /* =========================================
+           2. MEDIA QUERIES (La Magia)
+           ========================================= */
+
+        /* --- Breakpoint: Tablet (768px o menos) --- */
+        @media (max-width: 768px) {
+            .indicador-pantalla { background: #f59e0b; }
+            .indicador-pantalla::after { content: "📱 Tablet (≤ 768px)"; }
+
+            header {
+                flex-direction: column; /* Apilamos el logo y el menú */
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .hero h1 {
+                font-size: 2rem; /* Achicamos el título gigante */
+            }
+
+            .contenedor-tarjetas {
+                flex-wrap: wrap; /* Permitimos que las tarjetas bajen */
+                padding: 0 20px 40px 20px;
+            }
+
+            .tarjeta {
+                flex-basis: 100%; /* Cada tarjeta ocupa el 100% del ancho */
+            }
+        }
+
+        /* --- Breakpoint: Móvil Pequeño (480px o menos) --- */
+        @media (max-width: 480px) {
+            .indicador-pantalla { background: #3b82f6; }
+            .indicador-pantalla::after { content: "📱 Móvil (≤ 480px)"; }
+
+            .nav-links {
+                flex-direction: column; /* Menú en lista vertical */
+                text-align: center;
+                gap: 10px;
+                width: 100%;
+            }
+
+            .nav-links li {
+                background-color: rgba(255,255,255,0.1);
+                padding: 10px;
+                border-radius: 5px;
+            }
+
+            /* Ocultamos elementos no esenciales para ahorrar espacio visual */
+            .tarjeta p {
+                display: none; 
+            }
+            .tarjeta::after {
+                content: " (Descripción oculta en móvil)";
+                font-size: 0.8rem;
+                color: gray;
+            }
+        }
+
+        /* =========================================
+           3. NIVEL DIOS (Trucos Modernos)
+           ========================================= */
+
+        /* Detectar si el usuario usa Ratón vs Pantalla Táctil */
+        @media (hover: hover) {
+            /* Estos efectos solo se aplican si hay un mouse real */
+            .boton:hover {
+                transform: scale(1.1);
+                background-color: #0284c7;
+            }
+            .nav-links a:hover {
+                color: var(--primary-color);
+            }
+        }
+
+        /* Detectar el Modo Oscuro del Sistema Operativo */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* Sobreescribimos las variables para el modo oscuro */
+                --bg-color: #0f172a;
+                --text-color: #f8fafc;
+                --card-bg: #1e293b;
+                --header-bg: #020617;
+            }
+            
+            .tarjeta {
+                border: 1px solid #334155;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Indicador para que los alumnos vean en qué estado están -->
+    <div class="indicador-pantalla"></div>
+
+    <header>
+        <h2>LogoWeb</h2>
+        <ul class="nav-links">
+            <li><a href="#">Inicio</a></li>
+            <li><a href="#">Servicios</a></li>
+            <li><a href="#">Contacto</a></li>
+        </ul>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Diseño Fluido y Perfecto</h1>
+            <p>Redimensiona la ventana de tu navegador para ver la magia de las Media Queries.</p>
+        </section>
+
+        <section class="contenedor-tarjetas">
+            <article class="tarjeta">
+                <h3>Servicio 1</h3>
+                <p>Descripción detallada que ocupa mucho espacio y que podríamos querer ocultar en un celular pequeño para mejorar la lectura.</p>
+                <button class="boton">Ver más</button>
+            </article>
+
+            <article class="tarjeta">
+                <h3>Servicio 2</h3>
+                <p>Descripción detallada que ocupa mucho espacio y que podríamos querer ocultar en un celular pequeño para mejorar la lectura.</p>
+                <button class="boton">Ver más</button>
+            </article>
+
+            <article class="tarjeta">
+                <h3>Servicio 3</h3>
+                <p>Descripción detallada que ocupa mucho espacio y que podríamos querer ocultar en un celular pequeño para mejorar la lectura.</p>
+                <button class="boton">Ver más</button>
+            </article>
+        </section>
+    </main>
+
+</body>
+</html>
